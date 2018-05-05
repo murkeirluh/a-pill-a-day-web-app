@@ -10,6 +10,7 @@ psycopg2 = "*"
 whitenoise = "*"
 mysqlclient = "*"
 django-heroku = "*"
+python-decouple = "*"
 
 [requires]
 python_version = "3.6"
