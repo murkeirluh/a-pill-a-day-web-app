@@ -9,6 +9,7 @@ gunicorn = "*"
 psycopg2 = "*"
 whitenoise = "*"
 mysqlclient = "*"
+django-heroku = "*"
 
 [requires]
 python_version = "3.6"
