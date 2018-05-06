@@ -1,0 +1,44 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+            <h3>Request for a doctor account</h3>
+            <br>
+            <form action={% url 'doctor-register' %} method="POST">
+                {% csrf_token %}
+                <div class="ui large form">
+                    <div class="required field">
+                    <label for="username">Username</label>
+                    <input type="text" placeholder="{{ random_username }}" value="{{ random_username }}" name="username">
+                    </div>
+                    <div class="required field">
+                    <label for="password">Password</label>
+                    <input type="password" placeholder="Password" name="password">
+                    </div>
+                    <div class="field">
+                    <label for="name">Name</label>
+                    <input type="text" placeholder="Name" name="name">
+                    </div>
+                    <div class="field">
+                    <label for="specialization">Specialization</label>
+                    <input type="text" placeholder="Specialization" name="specialization">
+                    </div>
+                        
+                </div>
+                <br>
+                <input type="submit" value="Register" class="ui fluid large blue button" />
+            </form>
+            {% endblock %}
+        </div>
+        <div class="column"></div>
+    </div>
+</div>
+
+<script>
+    $('#genkeyfield').popup();
+
+
+</script>

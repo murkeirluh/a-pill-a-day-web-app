@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
+    
+    <style type="text/css">
+    #header-text {
+        font-family: 'Raleway', sans-serif !important;
+        font-weight: 800 !important;
+        font-size: 50px !important;
+        margin-top: 30px;
+        margin-bottom:20px;
+        text-align: center;
+    }
+    
+    body {
+        font-family: 'Raleway', sans-serif !important;
+        color: #212121;
+        font-weight: 400;
+        background-color: #fff;
+    }   
+
+    .ui.header {
+        font-family: 'Raleway', sans-serif !important;
+        font-weight: 600;
+    }
+
+    .ui.button {
+        font-family: 'Raleway', sans-serif !important;
+        font-weight: 700;
+    }
+
+    label .label {
+        font-family: 'Raleway', sans-serif !important;
+        font-weight: 600 !important;
+    }
+    </style>
+    
+    <title>A-Pill-A-Day</title>
+  </head>
+
+  <body>
+    
+    <h1 id="header-text">A-Pill-A-Day</h1>
+    <div class="ui divider"></div>
+
+    {% block messageblock %}
+    {% if messages %}
+    {% if messages|length == 1 %}
+    {% for message in messages %}
+    <div class="ui message {% if message.tags %} {{ message.tags }}"{% endif %} align="left"> {{ message }} </div>
+    {% endfor %}
+    {% else %}
+    <div class="ui message">
+        <ul class="list messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}> {{ message }}</li> 
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endblock messageblock %}
+
+    <div class="row">
+    {% block content %}
+    {% endblock content %} 
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+  </body>
+</html>

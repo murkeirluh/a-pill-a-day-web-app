@@ -1,0 +1,44 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+
+            <div class="ui stacked segment">
+            <h3 class="ui header">Login to your account</h3>
+            <div class="ui divider"></div>
+            <form class="ui form" action={% url 'login' %} method="POST">
+                    {% csrf_token %}
+
+                    <div class="field">
+                        <label class="label" for="username" align="left">Username: </label>
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="username" placeholder="e.g. user@domain.com" required />
+                        </div>
+                    </div>
+                        
+                    <div class="field">
+                        <label class="label" for="password" align="left">Password: </label>
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="Password" required />
+                        </div>
+                    </div>  
+                    <br>
+                    <input type="submit" value="Login" class="ui fluid large blue button" />
+                </form>
+                <br>
+                <div class="ui divider"></div>
+                <h4 class="ui header">Are you a doctor?</h4>
+                <input onclick="location.href='{% url 'doctor-register' %}'" type="submit" value="Request for an account" class="ui green button"/>
+            </div>
+            
+            {% endblock %}
+        </div>
+        <div class="column"></div>
+    </div>
+</div>
+
