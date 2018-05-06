@@ -44,7 +44,7 @@ This web app allows doctors to create and update prescriptions and intake schedu
 
     `$ source bin/activate`
 
-    You should see `(APILLADAY)` (or something similar) at the beginning of your 
+    You should see `(APILLADAY)` (or something similar) at the beginning of your terminal prompt. 
 
 5. Clone the repository
     
@@ -62,4 +62,8 @@ This web app allows doctors to create and update prescriptions and intake schedu
 
 9. Migrate the database
     
+<<<<<<< HEAD
     `$ python manage.py migrate`
+=======
+    `$ python manage.py migrate`
+>>>>>>> c52851c8b88974d2a17febc9186dfed92eb2a758
