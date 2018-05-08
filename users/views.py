@@ -3,10 +3,11 @@ from django.http import HttpResponse
 from django.views.generic import View, DetailView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from users.models import random_username, Doctors, Patients
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.urls import reverse
+
+from users.models import random_username, Doctors, Patients, first, second
 
 User = get_user_model()
 
@@ -22,7 +23,9 @@ class DoctorRegistrationView(View):
             rand_username = random_username
 
         context = {
-            'random_username': rand_username
+            'random_username': rand_username,
+            'first': first,
+            'second': second
         }
 
         return render(request, template_name, context)

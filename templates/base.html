@@ -7,6 +7,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
     
@@ -27,9 +29,10 @@
         background-color: #fff;
     }   
 
-    .ui.header {
+    .ui.link.header {
         font-family: 'Raleway', sans-serif !important;
         font-weight: 600;
+        cursor:pointer;
     }
 
     .ui.button {
@@ -48,7 +51,7 @@
 
   <body>
     
-    <h1 id="header-text">A-Pill-A-Day</h1>
+    <h1 id="header-text" class="ui link header" onclick="location.href={% url 'home' %}">A-Pill-A-Day</h1>
     <div class="ui divider"></div>
 
     {% block messageblock %}
@@ -74,6 +77,20 @@
     {% endblock content %} 
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
-  </body>
+    <script type="text/javascript">
+        function random_username() {
+            var first = ['dangerous', 'vulnerable', 'scrawny', 'equal', 'receptive', 'fragrant', 'purring', 'cavernous', 'reassuring', 'brisk', 'panoramic', 'awake', 'incisive', 'trivial', 'quiet', 'fickle', 'auspicious', 'broad', 'rosy', 'peevish', 'guarded', 'satisfying', 'musical', 'staid', 'illiterate', 'mediocre', 'vigilant', 'true', 'squiggly', 'taboo', 'fallacious', 'meek', 'tame', 'revolving', 'womanly', 'classic', 'wilted', 'infantile', 'equatorial', 'tan', 'unlawful', 'meddlesome', 'standing', 'rebel', 'apt', 'acidic', 'tattered', 'royal', 'cooing', 'ceaseless', 'hurried', 'nutritious', 'variable', 'leery', 'courteous', 'godly', 'uptight', 'next', 'violent', 'worthwhile', 'sizzling', 'dowdy', 'lavish', 'grand', 'heavenly', 'seemly', 'smooth', 'worst', 'cheery', 'lying', 'clueless', 'faded', 'dynamic', 'evasive', 'futuristic', 'extraneous', 'secretive', 'judgmental', 'crass', 'bitter', 'frivolous'];
+            var second = ['fibula', 'raisins', 'paella', 'brain', 'phalanges', 'crackers', 'tendon', 'artery', 'mayonnaise', 'zygomatic', 'vein', 'bone', 'medulla', 'cake', 'lobe', 'arm', 'metatarsal', 'rice', 'icecream', 'hormones', 'pepperoni', 'vocal', 'quiche', 'milkshakes', 'epidermis', 'organ', 'pepper', 'oblongata', 'chowder', 'nucleus', 'doughnut', 'collarbone', 'garlic', 'pear', 'basmati', 'tomatoe', 'abalone', 'cheese', 'wrist', 'torso', 'medial', 'ovary', 'orange', 'femur', 'limbic', 'salami', 'sardines', 'pistachio', 'vegetables', 'forearm', 'anus', 'teeth', 'jugular', 'heart', 'buttocks', 'venison', 'dna', 'tacos', 'uvula', 'humor', 'joint', 'wrinkles', 'cranium', 'socket', 'mammary', 'cerebrum', 'syrup', 'granola', 'vitreous', 'xiphoid', 'triceps', 'meniscus', 'ears', 'gyrus', 'ankle', 'muesli', 'deltoid', 'truffle', 'oil', 'face', 'relish', 'gatorade', 'apricots', 'diaphragm', 'apples', 'lard', 'nodule', 'cordial', 'polenta', 'blood', 'palate', 'disc', 'clam', 'pudding', 'carpus', 'jowl', 'groin', 'posterior', 'lollies', 'oatmeal', 'jerky', 'caviar', 'sternum', 'womb', 'vessels', 'aorta', 'marrow', 'sausage', 'tibia', 'retina', 'tubes', 'salt', 'eggs', 'tissue', 'tongue', 'iris', 'lumbar', 'septum', 'calf', 'bagels', 'burritos', 'chile', 'coconut', 'molar', 'thumb', 'chest', 'pelvis', 'dermis', 'navel', 'shoulders', 'pie', 'pretzels', 'quadriceps'];
+            var rand_first = first[Math.floor(Math.random() * first.length)];
+            var rand_second = second[Math.floor(Math.random() * second.length)];
+            $('#usernamefield').val(rand_first + rand_second);
+        }
+
+        $("#randomgen").click(function(e) {
+            random_username();
+        });
+
+    </script>
+
+</body>
 </html>
