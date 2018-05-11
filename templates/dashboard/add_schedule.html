@@ -1,0 +1,73 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+        <div class="ui stacked segment">
+            <h3>Add a schedule</h3>
+            <br>
+            <form class="ui form" action={% url 'add-schedule' %} method="POST">
+                {% csrf_token %}
+                <div class="ui centered large form">
+                    <div class="centered fields">
+                        <div class="five wide huge field">
+                            <label for="doctor_id">Doctor ID</label>
+                                <div class="ui fluid input" >
+                                    <input type="text" readonly="" value="{{ doctor_id }}" name="doctor_id" style="text-align:center;">                            
+                                </div>
+                                
+                                <small>This is your ID.</small>
+                        </div>
+
+                        <div class="eleven wide field">
+                            <label for="patient_id">Patient</label>
+                                {% if patients %}
+                                <select class="ui dropdown" name="patient_id">
+                                    <option value="">Select patient</option>
+                                    {% for p in patients %}
+                                    <option value="{{ p.patient_id }}">{{ p.name }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                {% else %}
+                                You don't have patients yet!
+                                {% endif %}
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="required ten wide field">
+                            <label for="medicine">Medicine</label>
+                            <input type="text" placeholder="Medicine name" name="medicine">
+                        </div>
+                        <div class="required six wide field">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" placeholder="Quantity" name="quantity">
+                        </div>
+                    </div> 
+                    <div class="field">
+                        <label for="notes">Notes</label>
+                        <textarea rows="2" name="notes" placeholder="Additional notes for patient"></textarea>
+                    </div>
+                               
+                </div>
+                <br><br>
+                <input type="submit" value="Add prescription" class="ui fluid large blue button" />
+            </form>
+            
+            <p><a href="{% url 'dashboard' %}">< Go back to dashboard</a></p>
+    </div>
+    </div>
+</div>
+
+<script>
+    $('.ui.dropdown').dropdown();
+    $('select.dropdown').dropdown();
+  
+    
+    
+    
+</script>
+
+{% endblock %}

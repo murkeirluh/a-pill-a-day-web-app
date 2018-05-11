@@ -1,0 +1,55 @@
+{% extends 'dashboard/home.html' %}
+
+{% block prescription_modal %}
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">Update a prescription</div>
+    <div class="content">
+        <form class="ui form" action="{% url 'update-prescription' %}" method="POST">
+            {% csrf_token %}
+            <div class="ui centered large form">
+                <div class="centered fields">
+                    <div class="five wide huge field">
+                        <label for="doctor_id">Doctor ID</label>
+                            <div class="ui fluid input" >
+                                <input type="text" readonly="" value="{{ doctor_id }}" name="doctor_id" style="text-align:center;">                            
+                            </div>
+                            
+                            <small>This is your ID.</small>
+                    </div>
+
+                    <div class="eleven wide field">
+                        <label for="patient_id">Patient</label>
+                            <select class="ui dropdown" name="patient_id">
+                            <option value="{{ presc.patient.patient_id }}">{{ presc.patient.name }}</option>
+                            {% if patients %}
+                                {% for p in patients %}
+                                <option value="{{ p.patient_id }}">{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="required ten wide field">
+                        <label for="medicine">Medicine</label>
+                        <input type="text" placeholder="Medicine name" name="medicine" value="{{ presc.medicine }}">
+                    </div>
+                    <div class="required six wide field">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" placeholder="Quantity" name="quantity" value="{{ presc.quantity }}">
+                    </div>
+                </div> 
+                <div class="field">
+                    <label for="notes">Notes</label>
+                    <textarea rows="2" name="notes" placeholder="Additional notes for patient" value="{% if presc.notes %} {{ presc.notes }} {% endif %}"></textarea>
+                </div>
+                            
+            </div>
+            <br><br>
+            <input type="submit" value="Add prescription" class="ui fluid large blue button" />
+        </form>
+    </div>
+</div>
+
+{% endblock %}

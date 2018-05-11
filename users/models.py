@@ -143,7 +143,7 @@ class Doctors(models.Model):
         return 'Doctor #{}: {}'.format(self.doctor_id, self.name)
 
 class PatientsManager(models.Manager):
-    def create_patient(self, username, doctor, name,  password=None):
+    def create_patient(self, username, doctor, name, key, password=None):
         if not username:
             username = random_username()
         
@@ -152,7 +152,7 @@ class PatientsManager(models.Manager):
         
         user = BaseUser.objects.create_user(username, "patient", password)
         
-        patient_details = self.model(user=user, doctor=doctor, name=name)
+        patient_details = self.model(user=user, doctor=doctor, name=name, key=key)
         patient_details.save()
 
         return patient_details 
@@ -163,9 +163,10 @@ class Patients(models.Model):
     user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctors, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
+    key = models.CharField(max_length=10, null=False, default=generate_key)
 
     objects = PatientsManager()
     
     def __str__(self):
-        return 'Patient #{} by Doctor #{}'.format(self.patient_id, self.doctor_id)
+        return self.name
     

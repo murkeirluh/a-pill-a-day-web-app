@@ -1,14 +1,266 @@
-<div class="ui grid container center aligned">
+<div class="ui container centered grid">
     <div class="row">
-        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+        <div class="eleven wide column segment">
 
             {% extends "base.html" %}
 
             {% block content %}
-        
-            Welcome, {{ current_user.username }}! <a href="{% url 'logout' %}"><strong>Logout</strong>.</a>
+			<h2 class="ui header" align="left">Dashboard
+            <div class="sub header" align="left" style="margin-bottom:5px;">Welcome,
+                {% if current_user.user_type == 'doctor' %} Dr. {% endif %} {{ this_user.name }} 
+            (<strong>{{ current_user.username }}</strong>)
+            </div></h2>
+        </div>  
+            <br>
+            <div class="row">
+                <div id="context1">
+                    <div class="ui first secondary pointing menu">
+                    {% if current_user.user_type == 'doctor' %}
+                        <a class="item active" data-tab="patients">Patients</a>
+                    {% endif %}
+                        <a class="item {% if current_user.user_type == 'patient' %} active {% endif %}" data-tab="prescriptions">Prescriptions</a>
+                        <a class="item" data-tab="schedules">Schedules</a>
+                        
+                        <div class="right menu">
+                            {% if current_user.user_type == 'doctor' %}
+                            <a class="link item" href={% url 'update-profile' %}>Edit My Profile</a>
+                            {% endif %}
+                            <a class="link item" href={% url 'logout' %}><i class="sign out icon"></i>Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui active tab segment" data-tab="patients" style="padding:16px !important;">
+                    <h2>Patients</h2>
+                    <p>
+                    {% if patients %}
+                    <table class="ui celled table">
+                        <thead>
+                            <tr><th>#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Key</th>
+                        </tr></thead>
+                        <tbody>
+                            {% for p in patients %}
+                            <tr>
+                                <td class="collapsing">{{ p.patient_id }}</td>
+                                <td>{{ p.name }}</td>
+                                <td>{{ p.user }}</td>
+                                <td>{{ p.key }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                        
+                    {% else %}
+                        No patients yet.
+                        
+                    {% endif %}
+                    </p>
 
+                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'">Add a patient</button></p>
+                </div>
+
+                <div class="ui tab segment" data-tab="prescriptions" style="padding:16px !important;">
+                    <h2>Prescriptions</h2>
+                    
+                    {% if prescriptions %}
+                    <p>Click a row to edit a prescription.  </p>
+                    <table class="ui selectable structured table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Medicine</th>
+                            <th>Quantity</th>
+                            <th>Notes</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for pr in prescriptions %}
+                            <tr class="selectable">
+                                <td onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';">{{ pr.presc_id }}</td>
+                                <td onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';">{{ pr.patient.name }}</td>
+                                <td onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';">
+                                    {{ pr.medicine }}
+                                </td>
+                                <td onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';">
+                                    {{ pr.quantity }}
+                                </td>
+                                <td onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';">
+                                    {{ pr.notes }}
+                                </td>
+                                <td onclick="delete_presc({{ pr.presc_id }});"><i class="trash alternate icon" title="Delete this prescription"></i></td>
+                            </tr>   
+                            {% endfor %}
+                        </tbody>
+                        </table>
+
+                    {% else %}
+                        <p>No prescriptions yet.</p>
+                    {% endif %}
+                          <p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'">Add a prescription</button></p>
+                </div>
+
+                <div class="ui tab segment" data-tab="schedules" style="padding:16px !important;">
+                    <h2>Schedules</h2>
+                    {% if patients %}
+                    <div class="ui top attached tabular menu">
+                        {% for p in patients %}
+                        <a class="{% if p == patients.0 %} active {% endif %}item" data-tab="{{ p.patient_id }}">
+                            {{ p.name }}
+                        </a>
+                        {% endfor %}
+                        
+                    </div>
+                    {% for p in patients %}
+                        <div class="ui bottom attached tab segment {% if p == patients.0 %} active {% endif %}" data-tab="{{ p.patient_id }}">
+                            <p>Click on a cell to edit schedule.</p>
+                            <table class="ui definition celled table">
+                                <thead>
+                                    <tr><th></th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                    <th>Saturday</th>
+                                    <th>Sunday</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr>
+                                    <td>Morning</td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    </tr>  
+                                    <tr>
+                                    <td>Afternoon</td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td>Evening</td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    <td class="selectable">
+                                        <a href="#">Edit</a>
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+    
+                        </div>
+                    {% endfor %}
+
+                    {% else %}
+                    <p>No patients yet.</p>
+                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'">Add a patient</button></p>
+                    {% endif %}
+                    
+                </div>
+
+			</div>
+        
+            
+
+    </div>
+</div>
+
+<div class="ui mini modal">
+    <div class="header">Delete Prescription</div>
+    <div class="content">
+        <p>Are you sure you want to delete this prescription?</p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            <i class="remove icon"></i> No
+        </div>
+        <div class="ui green ok inverted button">
+            <i class="checkmark icon"></i>Yes
         </div>
     </div>
 </div>
-            {% endblock %}
+
+
+<script type="text/javascript">
+	$('.first .menu .item').on('click', function() {
+		$('.first .menu .item').removeClass('active');
+		$(this).addClass('active');
+	});             
+    $('#context1 .menu .item').tab({
+        context: $('#context1')
+    });
+    $('.menu .item').tab();
+	$('.ui.dropdown').dropdown();
+
+    function delete_presc(pid) {
+        $('.mini.modal').modal({
+            closable  : true,
+            onDeny    : function(){
+                return true;
+            },
+            onApprove : function() {
+                location.href="{% url 'delete-prescription'%}?pid=" + pid;
+            }
+        })
+        .modal('show')
+        ;
+    }
+   
+	</script>
+{% endblock %}

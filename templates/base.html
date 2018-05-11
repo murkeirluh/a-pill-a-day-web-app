@@ -44,15 +44,36 @@
         font-family: 'Raleway', sans-serif !important;
         font-weight: 600 !important;
     }
+
+    #header {
+        text-align: center !important;
+    }
+
+    a {
+        color: rgba(0,0,0,.6);
+        font-family: 'Lato' !important;
+    }
+
+    a:hover {
+        color: rgba(0,0,0,.95) !important;
+    }
+
+    .selectable {
+        cursor:pointer !important;
+    }
     </style>
     
     <title>A-Pill-A-Day</title>
   </head>
 
   <body>
+    <div id="header">
+    <h1 id="header-text" class="ui link header" onclick="location.href='{% url 'home' %}'" style="margin-bottom:2px !important;">A-Pill-A-Day</h1>
+    <div style="text-align: center !important; font-size:14pt; font-family: 'Lato' !important;">
+        the web app
+    </div>
     
-    <h1 id="header-text" class="ui link header" onclick="location.href={% url 'home' %}">A-Pill-A-Day</h1>
-    <div class="ui divider"></div>
+    <div class="ui divider"></div></div>
 
     {% block messageblock %}
     {% if messages %}

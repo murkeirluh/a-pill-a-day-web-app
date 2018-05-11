@@ -1,0 +1,63 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+        <div class="ui stacked segment">
+            <h3>Update your profile</h3>
+            <br>
+            <form class="ui form" action={% url 'update-profile' %} method="POST">
+                {% csrf_token %}
+                <div class="ui centered large form">
+
+                    <input type="text" name="old_username" id="old_username" value="{{ object.username }}" hidden>
+                    <input type="text" name="old_name" id="old_name" value="gago" hidden>
+
+                    <div class="required field">
+                        <label for="name">Name</label>
+                        <input id="patientname" type="text" value="{{ object.name }}" name="name">
+                    </div>
+
+                    
+                    <div class="required field">
+                        <label for="username">New Username</label>
+                        <input id="usernamefield" readonly='' type="text" placeholder="New Username" value="{{ object.username }}" name="username">
+                    </div>
+
+                    <div class="required field">
+                        <label for="password">New Password</label>
+                        <input type="password" placeholder="Password" value="" name="password">
+                    </div>
+                        
+                </div>
+                
+                <br><br>
+                <div class="ui center form">
+                    <div class="required field">
+                        <center>  
+                        <label>Enter your old password to continue:</label>
+                        <div class="eight wide field">  
+                            <input type="password" placeholder="Enter old password" name="old_password">
+                        </div></center>
+                    </div>
+                </div>
+                <br>
+                <input type="submit" value="Update profile" class="ui fluid large blue button" />
+            </form>
+        <br>
+    </div>
+    </div>
+</div>
+
+<script>
+    $('#patientname').on('input', function(e) {
+        $('#usernamefield').val(($('#patientname').val()).toLowerCase().replace(' ', ''));
+    });
+    
+    
+    
+</script>
+
+{% endblock %}

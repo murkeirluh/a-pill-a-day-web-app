@@ -1,0 +1,70 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+        <div class="ui stacked segment">
+            <h3>Create a patient account</h3>
+            <br>
+            <form class="ui form" action={% url 'patient-register' %} method="POST">
+                {% csrf_token %}
+                <div class="ui centered large form">
+                    <div class="field">
+                        <label for="doctor_id">Doctor ID</label>
+                        <center>
+                            <div class="four wide field" style="margin-bottom:1px !important;">
+                                <div class="ui input">
+                                    <input type="text" readonly="" value="{{ doctor_id }}" name="doctor_id" style="text-align:center;">                            
+                                </div>
+                            </div>
+                            <small>This is your ID.</small>
+                        </center>
+                    </div>
+                        
+                    <div class="required field">
+                    <label for="key">Key</label>
+                    <center>
+                        <div class="six wide field" style="margin-bottom:1px !important;">
+                            <div class="ui large input">
+                                <input type="text" readonly="" value="{{ key }}" name="key" style="text-align:center;">                            
+                            </div>
+                        </div>
+                        <small><strong>IMPORTANT:</strong> Please take note of this key.<br>
+                        This will be your patient's temporary password.</small>
+                        
+                    </center>
+                    </div>
+
+                    <div class="required field">
+                        <label for="name">Name</label>
+                        <input id="patientname" type="text" placeholder="Name" name="name">
+                    </div>
+                    <div class="required field" style="margin-bottom:1px !important;">
+                        <label for="username">Username</label>
+                        <input id="usernamefield" type="text" placeholder="Username" value="" name="username">
+                    </div>
+                    <small>We recommend having your patient's name as their username. 
+                           <br>This can be edited by the patient later.</small>
+                        
+                </div>
+                <br><br>
+                <input type="submit" value="Register patient" class="ui fluid large blue button" />
+            </form>
+            
+            <p><a href="{% url 'dashboard' %}">< Go back to dashboard</a></p>
+    </div>
+    </div>
+</div>
+
+<script>
+    $('#patientname').on('input', function(e) {
+        $('#usernamefield').val(($('#patientname').val()).toLowerCase().replace(' ', ''));
+    });
+    
+    
+    
+</script>
+
+{% endblock %}
