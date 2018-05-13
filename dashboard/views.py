@@ -66,6 +66,7 @@ class DashboardHome(LoginRequiredMixin, TemplateView):
             morning = schedules.filter(time__gte=morn_start, time__lt=aft_start).order_by('time')
             afternoon = schedules.filter(time__gte=aft_start, time__lt=eve_start).order_by('time')
             evening = schedules.filter(time__gte=eve_start, time__lte=eve_end).order_by('time')
+            
             for p in context['patients']:    
                 context['schedules'][str(p.patient_id)] = { 'pid' : p.patient_id }
                 context['schedules'][str(p.patient_id)]['schedules'] = {
