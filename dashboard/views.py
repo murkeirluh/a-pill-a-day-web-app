@@ -114,9 +114,6 @@ class DashboardHome(LoginRequiredMixin, TemplateView):
         elif user_type == 'admin':
             context['doctors'] = Doctors.objects.all()
             context['patients'] = Patients.objects.all()
-
-        # for s,v in context['schedules'].items():
-        #     print(v, end='\n\n')
         
         return render(request, self.template_name, context) 
 

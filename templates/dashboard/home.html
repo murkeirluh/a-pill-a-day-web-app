@@ -367,7 +367,7 @@
                                         <td {% if scheds.wednesday.evening %}class="selectable"{% endif %}>
                                             {% if scheds.wednesday.evening %}
                                             <div class="ui list">
-                                                {% for s in scheds.wednesday %}
+                                                {% for s in scheds.wednesday.evening %}
                                                     <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
                                                 {% endfor %}
                                             </div>
@@ -381,7 +381,7 @@
                                         <td {% if scheds.thursday.evening %}class="selectable"{% endif %}>
                                             {% if scheds.thursday.evening %}
                                             <div class="ui list">
-                                                {% for s in scheds.thursday %}
+                                                {% for s in scheds.thursday.evening %}
                                                     <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
                                                 {% endfor %}
                                             </div>
@@ -394,7 +394,7 @@
                                         <td {% if scheds.friday.evening %}class="selectable"{% endif %}>
                                             {% if scheds.friday.evening %}
                                             <div class="ui list">
-                                                {% for s in scheds.friday %}
+                                                {% for s in scheds.friday.evening %}
                                                     <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
                                                 {% endfor %}
                                             </div>
@@ -407,7 +407,7 @@
                                         <td {% if scheds.saturday.evening %}class="selectable"{% endif %}>
                                             {% if scheds.saturday.evening %}
                                             <div class="ui list">
-                                                {% for s in scheds.saturday %}
+                                                {% for s in scheds.saturday.evening %}
                                                     <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
                                                 {% endfor %}
                                             </div>
@@ -420,7 +420,7 @@
                                         <td {% if scheds.sunday.evening %}class="selectable"{% endif %}>
                                             {% if scheds.sunday.evening %}
                                             <div class="ui list">
-                                                {% for s in scheds.sunday %}
+                                                {% for s in scheds.sunday.evening %}
                                                     <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
                                                 {% endfor %}
                                             </div>
