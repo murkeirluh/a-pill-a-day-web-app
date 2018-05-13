@@ -1,6 +1,6 @@
 <div class="ui container centered grid">
     <div class="row">
-        <div class="eleven wide column segment">
+        <div class="twelve wide column segment">
 
             {% extends "base.html" %}
 
@@ -44,7 +44,7 @@
                             {% for p in patients %}
                             <tr>
                                 <td class="collapsing">{{ p.patient_id }}</td>
-                                <td>{{ p.name }}</td>
+                                <td>{{ p }}</td>
                                 <td>{{ p.user }}</td>
                                 <td>{{ p.key }}</td>
                             </tr>
@@ -58,7 +58,7 @@
                     {% endif %}
                     </p>
 
-                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'">Add a patient</button></p>
+                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i> Add a patient</button></p>
                 </div>
 
                 <div class="ui tab segment" data-tab="prescriptions" style="padding:16px !important;">
@@ -100,116 +100,348 @@
                     {% else %}
                         <p>No prescriptions yet.</p>
                     {% endif %}
-                          <p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'">Add a prescription</button></p>
+                          <p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'"><i class="plus icon"></i>Add a prescription</button></p>
                 </div>
 
                 <div class="ui tab segment" data-tab="schedules" style="padding:16px !important;">
                     <h2>Schedules</h2>
                     {% if patients %}
+                    <form id="add_schedule" action="{% url 'add-schedule' %}" method="GET"> 
+                        <input type="text" id="sched_patient" name="patient_id" hidden>
+                        <input type="text" id="sched_day" name="day" hidden>
+                        <input type="text" id="sched_time" name="time" hidden>
+                    </form>
                     <div class="ui top attached tabular menu">
                         {% for p in patients %}
+                        <input type="text" id="patient_{{ p.patient_id }}" value="{{ p }}" hidden>
                         <a class="{% if p == patients.0 %} active {% endif %}item" data-tab="{{ p.patient_id }}">
-                            {{ p.name }}
+                            {{ p }}
                         </a>
                         {% endfor %}
                         
                     </div>
+
+                    
                     {% for p in patients %}
-                        <div class="ui bottom attached tab segment {% if p == patients.0 %} active {% endif %}" data-tab="{{ p.patient_id }}">
-                            <p>Click on a cell to edit schedule.</p>
-                            <table class="ui definition celled table">
-                                <thead>
-                                    <tr><th></th>
-                                    <th>Monday</th>
-                                    <th>Tuesday</th>
-                                    <th>Wednesday</th>
-                                    <th>Thursday</th>
-                                    <th>Friday</th>
-                                    <th>Saturday</th>
-                                    <th>Sunday</th>
-                                </tr></thead>
-                                <tbody>
-                                    <tr>
-                                    <td>Morning</td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    </tr>  
-                                    <tr>
-                                    <td>Afternoon</td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td>Evening</td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    <td class="selectable">
-                                        <a href="#">Edit</a>
-                                    </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        {% for k, v in schedules.items %}
+                            {% if p.patient_id == v.pid %}
+                            {% with scheds=v.schedules %} 
+                            <div class="ui bottom attached tab segment {% if p == patients.0 %} active {% endif %}" data-tab="{{ p.patient_id }}">
+                                
+                                <p>Click on a cell to edit schedule.</p>
+                                <table class="ui definition celled table">
+                                    <thead>
+                                        <tr><th></th>
+                                        <th>Monday</th>
+                                        <th>Tuesday</th>
+                                        <th>Wednesday</th>
+                                        <th>Thursday</th>
+                                        <th>Friday</th>
+                                        <th>Saturday</th>
+                                        <th>Sunday</th>
+                                    </tr></thead>
+                                    <tbody>
+                                        
+                                        <tr class="morning">
+                                        <td>Morning</td>
+                                        <!-- Monday -->
     
+                                        <td {% if scheds.monday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.monday.morning %}
+                                                <div class="ui list">
+                                                {% for s in scheds.monday.morning %}
+                                                <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                                </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Monday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Tuesday -->
+                                        <td {% if scheds.tuesday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.tuesday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.tuesday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Tuesday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Wednesday -->
+                                        <td {% if scheds.wednesday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.wednesday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.wednesday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Wednesday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Thursday -->
+                                        <td {% if scheds.thursday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.thursday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.thursday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Thursday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Friday -->
+                                        <td{% if scheds.friday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.friday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.friday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Friday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Saturday -->
+                                        <td{% if scheds.saturday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.saturday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.saturday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Saturday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Sunday -->
+                                        <td{% if scheds.sunday.morning %} class="selectable" {% endif %}>
+                                            {% if scheds.sunday.morning %}
+                                            <div class="ui list">
+                                                {% for s in scheds.sunday.morning %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Sunday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        </tr>  
+                                        <tr class="afternoon">
+                                        <td>Afternoon</td>
+                                        <!-- Monday -->
+                                        <td {% if scheds.monday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.monday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.monday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Monday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Tuesday -->
+                                        <td {% if scheds.tuesday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.tuesday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.tuesday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Tuesday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Wednesday -->
+                                        <td {% if scheds.wednesday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.wednesday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.wednesday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Wednesday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Thursday -->
+                                        <td {% if scheds.thursday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.thursday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.thursday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Thursday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Friday -->
+                                        <td {% if scheds.friday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.friday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.friday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Friday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Saturday -->
+                                        <td {% if scheds.saturday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.saturday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.saturday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Saturday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Sunday -->
+                                        <td {% if scheds.sunday.afternoon %}class="selectable"{% endif %}>
+                                            {% if scheds.sunday.afternoon %}
+                                            <div class="ui list">
+                                                {% for s in scheds.sunday.afternoon %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Sunday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        </tr>
+                                        <tr class="evening">
+                                        <td>Evening</td>
+                                        <!-- Monday -->
+                                        <td {% if scheds.monday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.monday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.monday.evening %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Monday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Tuesday -->
+                                        <td {% if scheds.tuesday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.tuesday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.tuesday.evening %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Tuesday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Wednesday -->
+                                        <td {% if scheds.wednesday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.wednesday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.wednesday %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Wednesday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <!-- Thursday -->
+                                        <td {% if scheds.thursday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.thursday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.thursday %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Thursday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Friday -->
+                                        <td {% if scheds.friday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.friday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.friday %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Friday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Saturday -->
+                                        <td {% if scheds.saturday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.saturday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.saturday %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Saturday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        <!-- Sunday -->
+                                        <td {% if scheds.sunday.evening %}class="selectable"{% endif %}>
+                                            {% if scheds.sunday.evening %}
+                                            <div class="ui list">
+                                                {% for s in scheds.sunday %}
+                                                    <div class="item">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            
+                                            <a href="#" onclick="add_schedule('Sunday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% endif %}
+                                        </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endwith %}
+                            {% endif %}
+                        {% endfor %}
                         </div>
+                        
                     {% endfor %}
 
                     {% else %}
                     <p>No patients yet.</p>
-                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'">Add a patient</button></p>
+                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i>Add a patient</button></p>
                     {% endif %}
                     
                 </div>
@@ -220,6 +452,12 @@
 
     </div>
 </div>
+
+{% comment %} 
+<div class="ui custom popup top center">
+    <button class="ui tiny blue button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i>Add a new schedule</button>
+</div> 
+{% endcomment %}
 
 <div class="ui mini modal">
     <div class="header">Delete Prescription</div>
@@ -238,16 +476,22 @@
 
 
 <script type="text/javascript">
-	$('.first .menu .item').on('click', function() {
+	// for dashboard main menu
+    $('.first .menu .item').on('click', function() {
 		$('.first .menu .item').removeClass('active');
 		$(this).addClass('active');
-	});             
+	});    
+
+    // for double tabbed menus
     $('#context1 .menu .item').tab({
         context: $('#context1')
     });
-    $('.menu .item').tab();
-	$('.ui.dropdown').dropdown();
 
+    // single element functionalities
+	$('.ui.dropdown').dropdown();
+    $('.menu .item').tab();
+
+    // show confirmation modal before deleting a prescription
     function delete_presc(pid) {
         $('.mini.modal').modal({
             closable  : true,
@@ -261,6 +505,25 @@
         .modal('show')
         ;
     }
-   
+
+    function add_schedule(day, time, patient_id) {
+        $('#sched_day').val(day);
+        console.log($('#sched_day').val());
+        $('#sched_time').val(time);
+        console.log($('#sched_time').val());
+        $('#sched_patient').val(patient_id);
+        console.log($('#sched_patient').val());
+        $('form#add_schedule').submit();
+    }
+    
+    $('.selectable').on('select', function(){
+        window.alert("Selected!");
+    });
+    
+    $('.selectable').popup({
+        popup : $('.custom.popup'),
+        on    : 'click'
+    });
+
 	</script>
 {% endblock %}

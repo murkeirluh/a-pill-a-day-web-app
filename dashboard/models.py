@@ -21,7 +21,7 @@ class Prescriptions(models.Model):
     is_purchased = models.BooleanField(default=False)
     
     def __str__(self):
-        return 'Prescription {}: {}, x{} ({})'.format(self.p, self.medicine, self.quantity, self.notes)
+        return '{} x{} ({})'.format(self.medicine, self.quantity, self.notes)
 
 class Schedules(models.Model):
     sched_id = models.AutoField(primary_key=True)
