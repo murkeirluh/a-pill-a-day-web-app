@@ -29,23 +29,19 @@
                     <br>
                     <div class="required field">
                         <label for="prescription">Prescription</label>
-                            {% if prescriptions %}
-                            <div id="prescription_list" class="ui selection dropdown">
-                                <input name="prescription" type="hidden">
-                                <i class="dropdown icon"></i>
-                                <div class="default text">{% if prescription %}#{{ prescription.presc_id }} - {{ prescription.medicine }} (x{{ prescription.quantity }}){% else %}Prescription{% endif %}</div>
-                                <div class="menu">
-                                    {% for p in prescriptions %}
-                                        <div id="presc-{{ p.presc_id }}" class="item {% if prescription and prescription.presc_id == p.presc_id %}selected{%endif%}" data-value="{{ p.presc_id }}" attr-med="{{ p.medicine }}" attr-quantity="{{p.quantity}}">#{{ p.presc_id }} - {{ p.medicine }} (x{{ p.quantity }})</div>
-                                    {% endfor %}
-                                </div>
-                                </div>
-                                
+                        {% if prescriptions %}
+                        <div id="prescription_list" class="ui selection dropdown">
+                            <input name="prescription" type="hidden">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">{% if prescription %}#{{ prescription.presc_id }} - {{ prescription.medicine }} (x{{ prescription.quantity }}){% else %}Prescription{% endif %}</div>
+                            <div class="menu">
+                                {% for p in prescriptions %}
+                                    <div id="presc-{{ p.presc_id }}" class="item {% if prescription and prescription.presc_id == p.presc_id %}selected{%endif%}" data-value="{{ p.presc_id }}" attr-med="{{ p.medicine }}" attr-quantity="{{p.quantity}}">#{{ p.presc_id }} - {{ p.medicine }} (x{{ p.quantity }})</div>
+                                {% endfor %}
                             </div>
+                        </div>        
+                    </div>
 
-                            {% else %}
-                            No prescriptions for this patient yet.
-                            {% endif %}
                     <div class="fields">
                         <div class="required ten wide field">
                             <label for="medicine">Medicine</label>
@@ -120,6 +116,14 @@
                 </div>
                 <br><br>
                 <input type="submit" value="Add schedule" class="ui fluid large blue button" />
+
+                {% else %}
+                No prescriptions for this patient yet.
+                Please add prescriptions for this patient first.
+                <p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'?patient={{ patient.patient_id }}"><i class="plus icon"></i>Add a prescription</button></p>
+                            
+                    
+                {% endif %}
             </form>
             
             <p><a href="{% url 'dashboard' %}">< Go back to dashboard</a></p>

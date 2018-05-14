@@ -11,7 +11,7 @@ class Prescriptions(models.Model):
     medicine = models.CharField(max_length=100, null=False)
     # total quantity of medicines that patient will buy
     quantity = models.IntegerField(verbose_name="quantity", name="quantity", null=False)
-    notes = models.TextField(default="None")
+    notes = models.TextField(blank=True)
     date_created = models.DateField(default=timezone.now)
     date_modified = models.DateField(default=timezone.now)
     is_purchased = models.BooleanField(default=False)
@@ -37,5 +37,5 @@ class Intakes(models.Model):
     intake_id = models.AutoField(primary_key=True)
     patient = models.ForeignKey(Patients, primary_key=False, on_delete=models.CASCADE)
     sched = models.ForeignKey(Schedules, primary_key=False, on_delete=models.CASCADE)
-    time_taken = models.TimeField(auto_now_add=True)
+    time_taken = models.DateTimeField(auto_now_add=True)
 
