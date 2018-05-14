@@ -6,10 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-
+from django.utils.decorators import method_decorator
 
 from dashboard.models import Schedules, Intakes
 from users.models import Patients
@@ -72,7 +72,10 @@ def arduino(request, pid):
     return HttpResponse(content, content_type='text/plain')
     
 """ RETURN LOGINREQUIREDMIXIN ONCE LOGIN IS FIXED ON MOBILE APP """
+
+@method_decorator(csrf_exempt, name='dispatch')
 class MobileResponse(DetailView):
+    @method_decorator(csrf_protect)
     def get(self, request, *args, **kwargs):
         pid = kwargs.get('pid')
         patient_id = kwargs.get('pid')
@@ -91,7 +94,7 @@ class MobileResponse(DetailView):
             content = { 'error' : "An error occured." }
             return JsonResponse(content, status=400)
 
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
         # app will send json object containing patient_id and sched_id
         data = JSONParser().parse(request)
