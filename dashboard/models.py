@@ -42,3 +42,4 @@ class Intakes(models.Model):
     patient = models.ForeignKey(Patients, primary_key=False, on_delete=models.CASCADE)
     sched = models.ForeignKey(Schedules, primary_key=False, on_delete=models.CASCADE)
     time_taken = models.TimeField(auto_now_add=True)
+

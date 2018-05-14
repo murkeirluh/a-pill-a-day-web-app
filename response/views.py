@@ -1,6 +1,14 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.generic import View, DetailView
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+
 from dashboard.models import Schedules
+from users.models import Patients
 from datetime import datetime, time
 
 morn_start = time(0,0)
@@ -26,7 +34,7 @@ def generate_matrix(day=None, time=None):
     print (matrix)
     return matrix
 
-def arduino(request):
+def arduino(request, pid):
     content = ""
     current_time = datetime.now()
     display_text = current_time.strftime('%H:%M:%S %B %d, %Y')
@@ -35,7 +43,7 @@ def arduino(request):
     day = current_time.strftime('%A')
     time = current_time.strftime('%H:%M:%S')
 
-    schedules = Schedules.objects.filter(day=day, time=time)
+    schedules = Schedules.objects.filter(presc__patient_patient_id=pid, day=day, time=time)
 
     content += "Current time: "
     content += display_text
@@ -57,6 +65,26 @@ def arduino(request):
 
     return HttpResponse(content, content_type='text/plain')
     
+class MobileResponse(DetailView):
+    
+    def get(self, request, *args, **kwargs):
+        pid = kwargs.get('pid')
+        patient_id = kwargs.get('pid')
+        patient = Patients.objects.get(patient_id=patient_id)
+        # current_user = self.request.user
+        # if self.request.user == patient.user:
+
+        if patient:
+            s = Schedules.objects.filter(presc__patient__patient_id=pid).order_by('sched_id')
+            schedules = list(s.values())
+            json_list = { 'schedules' : schedules }
+
+            return JsonResponse(json_list, safe=False)
+        else:
+            content = "You are unauthorized to view this page."
+            return HttpResponse(content, content_type='text/plain')
+        
+
 
 
 
