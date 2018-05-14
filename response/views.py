@@ -6,9 +6,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
-from dashboard.models import Schedules
+
+from dashboard.models import Schedules, Intakes
 from users.models import Patients
+from dashboard.serializers import IntakeSerializer
+
 from datetime import datetime, time
 
 morn_start = time(0,0)
@@ -65,24 +71,34 @@ def arduino(request, pid):
 
     return HttpResponse(content, content_type='text/plain')
     
+""" RETURN LOGINREQUIREDMIXIN ONCE LOGIN IS FIXED ON MOBILE APP """
 class MobileResponse(DetailView):
-    
     def get(self, request, *args, **kwargs):
         pid = kwargs.get('pid')
         patient_id = kwargs.get('pid')
         patient = Patients.objects.get(patient_id=patient_id)
-        # current_user = self.request.user
-        # if self.request.user == patient.user:
+        current_user = self.request.user
+        if self.request.user == patient.user:
 
-        if patient:
-            s = Schedules.objects.filter(presc__patient__patient_id=pid).order_by('sched_id')
-            schedules = list(s.values())
-            json_list = { 'schedules' : schedules }
+            if patient:
+                s = Schedules.objects.filter(presc__patient__patient_id=pid).order_by('sched_id')
+                schedules = list(s.values())
+                json_list = { 'schedules' : schedules }
 
-            return JsonResponse(json_list, safe=False)
+                return JsonResponse(json_list, safe=False)
         else:
-            content = "You are unauthorized to view this page."
-            return HttpResponse(content, content_type='text/plain')
+            content = { 'error' : "You are unauthorized to view this page." }
+            return JsonResponse(content, status=400)
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        # app will send json object containing patient_id and sched_id
+        data = JSONParser().parse(request)
+        serializer = IntakeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
         
 
 

@@ -4,10 +4,6 @@ from django.utils import timezone
 
 from users.models import Doctors, Patients
 
-# prescriptions - id, doctor_id, patient_id, medicine, quantity, notes, date_created, date_modified
-
-# schedules - id, prescription_id, time, day, medicine, quantity, notes, date_created, date_modified
-
 class Prescriptions(models.Model):
     presc_id = models.AutoField(primary_key=True)
     doctor = models.ForeignKey(Doctors, on_delete=models.CASCADE)
@@ -15,7 +11,7 @@ class Prescriptions(models.Model):
     medicine = models.CharField(max_length=100, null=False)
     # total quantity of medicines that patient will buy
     quantity = models.IntegerField(verbose_name="quantity", name="quantity", null=False)
-    notes = models.TextField()
+    notes = models.TextField(default="None")
     date_created = models.DateField(default=timezone.now)
     date_modified = models.DateField(default=timezone.now)
     is_purchased = models.BooleanField(default=False)

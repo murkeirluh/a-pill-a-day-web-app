@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
-from django.views.generic import View, ListView, DetailView
+from django.views.generic import View, DetailView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -186,18 +186,28 @@ class AddPrescriptionView(LoginRequiredMixin, TemplateView):
         template_name = 'dashboard/add_prescription.html'
         if self.request.user.user_type == 'doctor':
             doctor_id = Doctors.objects.get(user__user_id=self.request.user.user_id).doctor_id
-            patients = Patients.objects.filter(doctor__doctor_id=doctor_id).order_by('patient_id')
-
-            if patients:  
+            patient = self.request.GET.get('patient')
+            
+            if patient:
                 context = {
-                    'patients' : patients,
-                    'doctor_id' : doctor_id
-                }
-
+                        'patients' : patient,
+                        'doctor_id' : doctor_id
+                    }
                 return render(request, template_name, context)
+
             else:
-                messages.error(request, "You have no patients to add prescriptions to.")
-                return redirect(reverse('home'))
+                patients = Patients.objects.filter(doctor__doctor_id=doctor_id).order_by('patient_id')
+
+                if patients:  
+                    context = {
+                        'patients' : patients,
+                        'doctor_id' : doctor_id
+                    }
+
+                    return render(request, template_name, context)
+                else:
+                    messages.error(request, "You have no patients to add prescriptions to.")
+                    return redirect(reverse('home'))
 
         else:
             messages.error(request, "You are unauthorized to view this page.")
@@ -276,31 +286,36 @@ class AddScheduleView(LoginRequiredMixin, TemplateView):
             day = self.request.GET.get('day', kwargs.get('day'))
             patient_id = self.request.GET.get('patient_id', kwargs.get('patient_id'))
             patient = (Patients.objects.filter(patient_id=patient_id).first() if patient_id else None)
+            prescriptions = ""
 
             if patient_id:
                 self.patient = Patients.objects.filter(patient_id=patient_id).first() or None
                 prescriptions = Prescriptions.objects.filter(doctor__doctor_id=doctor_id, patient__patient_id=patient_id).order_by('presc_id')
                 # medicines = list(prescriptions.values_list('medicine', flat=True))
-            else:
-                prescriptions = Prescriptions.objects.filter(doctor__doctor_id=doctor_id).order_by('patient_id')
+            # else:
+            #     prescriptions = Prescriptions.objects.filter(doctor__doctor_id=doctor_id).order_by('patient_id')
                 # medicines = list(prescriptions.values_list('medicine', flat=True))
+            if prescriptions:
+                context = {
+                    'doctor_id' : doctor_id,
+                    'time' : time,
+                    'day' : day,
+                    'prescriptions': prescriptions
+                }
 
-            context = {
-                'doctor_id' : doctor_id,
-                'time' : time,
-                'day' : day,
-                'prescriptions': prescriptions
-            }
+                if patient:
+                    context['patient'] = patient
+                if patient_id:
+                    context['patient_id'] = patient_id
+                
+                if len(self.dictionary) == 0:
+                    self.dictionary = context
 
-            if patient:
-                context['patient'] = patient
-            if patient_id:
-                context['patient_id'] = patient_id
+                return render(request, template_name, context)
             
-            if len(self.dictionary) == 0:
-                self.dictionary = context
-
-            return render(request, template_name, context)
+            else:
+                messages.error(request, "Please make prescriptions for your patient/s first.")
+                return redirect(reverse('home'))
     
     def post(self, request, *args, **kwargs):
         patient = self.request.POST.get('patient')
