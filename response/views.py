@@ -77,17 +77,18 @@ class MobileResponse(DetailView):
         pid = kwargs.get('pid')
         patient_id = kwargs.get('pid')
         patient = Patients.objects.get(patient_id=patient_id)
-        current_user = self.request.user
-        if self.request.user == patient.user:
+        # current_user = self.request.user
+        # if self.request.user == patient.user:
 
-            if patient:
-                s = Schedules.objects.filter(presc__patient__patient_id=pid).order_by('sched_id')
-                schedules = list(s.values())
-                json_list = { 'schedules' : schedules }
+        if patient:
+            s = Schedules.objects.filter(presc__patient__patient_id=pid).order_by('sched_id')
+            schedules = list(s.values())
+            json_list = { 'schedules' : schedules }
 
-                return JsonResponse(json_list, safe=False)
+            return JsonResponse(json_list, safe=False)
         else:
-            content = { 'error' : "You are unauthorized to view this page." }
+            # content = { 'error' : "You are unauthorized to view this page." }
+            content = { 'error' : "An error occured." }
             return JsonResponse(content, status=400)
 
     @csrf_exempt
