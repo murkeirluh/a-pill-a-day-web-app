@@ -49,7 +49,7 @@ def arduino(request, pid):
     day = current_time.strftime('%A')
     time = current_time.strftime('%H:%M:%S')
 
-    schedules = Schedules.objects.filter(presc__patient_patient_id=pid, day=day, time=time)
+    schedules = Schedules.objects.filter(presc__patient__patient_id=pid, day=day, time=time)
 
     content += "Current time: "
     content += display_text
