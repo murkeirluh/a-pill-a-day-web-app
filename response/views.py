@@ -106,9 +106,11 @@ class MobileResponse(DetailView):
     def post(self, request, *args, **kwargs):
         # app will send json object containing patient_id and sched_id
         data = JSONParser().parse(request)
-        format = '%Y-%m-%dT%H:%M:%S.%f'
-        date = datetime.strptime(data['time_taken'], format)
-        data['time_taken'] = date
+        # format = '%Y-%m-%dT%H:%M:%S.%f'
+        # date = datetime.strptime(data['time_taken'], format)
+        # data['time_taken'] = date
+        # print (data['time_taken'])
+        print(data)
         serializer = IntakeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
