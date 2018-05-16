@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from django.utils.decorators import method_decorator
+from datetime import timezone
 
 from dashboard.models import Schedules, Intakes
 from users.models import Patients
@@ -40,6 +41,10 @@ def generate_matrix(day=None, time=None):
     print (matrix)
     return matrix
 
+
+def utc_to_local(utc_dt):
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
 def arduino(request, pid):
     content = ""
     current_time = datetime.now()
@@ -48,7 +53,9 @@ def arduino(request, pid):
 
     day = current_time.strftime('%A')
     time = current_time.strftime('%H:%M:%S')
+    print (day, time)
 
+    # find schedule for current time
     schedules = Schedules.objects.filter(presc__patient__patient_id=pid, day=day, time=time)
 
     content += "Current time: "
@@ -57,6 +64,7 @@ def arduino(request, pid):
     content += code_text
     content += "\n\n"
 
+    # if there is a schedule, check if patient has already taken med
     if len(schedules):
         matrix = generate_matrix(day, time)
     else:
@@ -98,6 +106,7 @@ class MobileResponse(DetailView):
     def post(self, request, *args, **kwargs):
         # app will send json object containing patient_id and sched_id
         data = JSONParser().parse(request)
+        data['time_taken'] = utc_to_local(data['time_taken'])
         serializer = IntakeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

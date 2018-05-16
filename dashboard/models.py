@@ -37,5 +37,7 @@ class Intakes(models.Model):
     intake_id = models.AutoField(primary_key=True)
     patient = models.ForeignKey(Patients, primary_key=False, on_delete=models.CASCADE)
     sched = models.ForeignKey(Schedules, primary_key=False, on_delete=models.CASCADE)
-    time_taken = models.DateTimeField(auto_now_add=True)
+    time_taken = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return '{} intake: sched {} at {}'.format(self.patient.name, self.sched.sched_id, self.time_taken)
