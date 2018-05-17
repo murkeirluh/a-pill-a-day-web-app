@@ -3,6 +3,12 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from users.models import Doctors, Patients
+from datetime import time
+
+morn_start = time(0,0)
+aft_start = time(12,0)
+eve_start = time(18,0)
+eve_end = time(23,59)
 
 class Prescriptions(models.Model):
     presc_id = models.AutoField(primary_key=True)
@@ -30,7 +36,18 @@ class Schedules(models.Model):
     date_modified = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return '{} at {}, {}'.format(self.medicine, self.time, self.day)
+        return 'x{} {} at {}, {}'.format(self.quantity, self.medicine, self.time, self.day)
+
+    def get_str(self):
+        string = "x" + str(self.quantity) + " " + str(self.medicine)
+        string += " for " + str(self.day)
+        if self.time >= morn_start and self.time < aft_start:
+            string += " morning"
+        elif self.time >= aft_start and self.time < eve_start:
+            string += " afternoon"
+        elif self.time >= eve_start and self.time < eve_end:
+            string += " evening"
+        return string
 
 # intakes - id, patient_id, schedule_id, time_taken
 class Intakes(models.Model):
@@ -40,4 +57,4 @@ class Intakes(models.Model):
     time_taken = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return '{} intake: sched {} at {}'.format(self.patient.name, self.sched.sched_id, self.time_taken)
+        return '{} intake: sched {} at {}'.format(self.patient.name, self.sched.sched_id, self.self.timetaken)

@@ -1,0 +1,214 @@
+<div class="ui grid container center aligned">
+    <div class="row">
+        <div class="six wide computer column eleven wide tablet eleven wide mobile">
+
+            {% extends "base.html" %}
+
+            {% block content %}
+        <div class="ui stacked segment">
+            <h3>Update a schedule</h3>
+            <br>
+            <form class="ui form" action="{% url 'view-schedule' sched_id=sched_id %}" method="POST">
+                {% csrf_token %}
+                <div class="ui centered large form">
+                    <input type="text" name="patient" value="{{ patient }}" hidden>
+                    <input type="text" name="patient_id" value="{{ patient.patient_id }}" hidden>
+                    
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="patient">Patient</label>
+                            <div class="large text">{{ patient.name }}</div>
+                            <input type="text" name="time_arg" value="{{ time }}" hidden>
+                            <input type="text" name="day_arg" value="{{ day }}" hidden>
+                        </div>
+                        <div class="field">
+                            <label>Day and Time</label>
+                            <div class="large text">{{ day }} {{ time }}</div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="required field">
+                        <label for="prescription">Prescription</label>
+                            {% if prescription %}
+                            <div id="prescription_list" class="ui selection dropdown">
+                                <input name="prescription" value="{{ prescription.presc_id }}" hidden>
+                                <i class="dropdown icon"></i>
+                                <div class="text">{% if prescription %}#{{ prescription.presc_id }} - {{ prescription.medicine }} (x{{ prescription.quantity }}){% else %}Prescription{% endif %}</div>
+                                <div class="menu">
+                                   <div id="presc-{{ prescription.presc_id }}" class="item {% if prescription and prescription.presc_id == prescription.presc_id %}selected{%endif%}" data-value="{{ prescription.presc_id }}" attr-med="{{ prescription.medicine }}" attr-quantity="{{prescription.quantity}}">#{{ prescription.presc_id }} - {{ prescription.medicine }} (x{{ prescription.quantity }})</div>
+                                    
+                                </div>
+                                </div>
+                                
+                            </div>
+
+                            {% else %}
+                            No prescriptions for this patient yet.
+                            {% endif %}
+                    <div class="fields">
+                        <div class="required ten wide field">
+                            <label for="medicine">Medicine</label>
+                            <input id="medicine_input" name="medicine" value="{{ medicine }}" hidden>
+                            <div id="meds_list" class="ui selection dropdown"> 
+                                <i class="dropdown icon"></i>
+                                <div class="text">{{ medicine }}</div>
+                                <div class="menu">
+                                    <div class="item" data-value="{{ medicine }}">{{ medicine }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="required six wide field">
+                            <label for="quantity">Quantity</label>
+                            <input id="med_qty" type="number" min=1 name="quantity" value="{% if quantity %} {{ quantity }} {% endif %}">
+                        </div>
+                    </div> 
+
+                    
+                    <div class="equal width fields">
+                        <div class="grouped fields">
+                            <div class="required field" style="margin-left:10px;">
+                                <label for="day">Day</label>
+                                <center>
+                                <div id="days_list" class="ui selection dropdown" style="margin-bottom:5px !important;">
+                                    <input id="day_input" name="day" type="hidden">
+                                    <i class="dropdown icon"></i>
+                                    <div class="text">{{day}}</div>
+                                    <div class="menu">
+                                        <div class="item {% if day == 'Monday' %} selected {% endif %}" data-value="Monday">Monday</div>
+                                        <div class="item {% if day == 'Tuesday' %} selected {% endif %}" data-value="Tuesday">Tuesday</div>
+                                        <div class="item {% if day == 'Wednesday' %} selected {% endif %}" data-value="Wednesday">Wednesday</div>
+                                        <div class="item {% if day == 'Thursday' %} selected {% endif %}" data-value="Thursday">Thursday</div>
+                                        <div class="item {% if day == 'Friday' %} selected {% endif %}" data-value="Friday">Friday</div>
+                                        <div class="item {% if day == 'Saturday' %} selected {% endif %}" data-value="Saturday">Saturday</div>
+                                        <div class="item {% if day == 'Sunday' %} selected {% endif %}" data-value="Sunday">Sunday</div>
+                                    </div>
+                                </div></center>
+                                </div>
+                            
+                            
+                        </div>
+                        
+                        <div class="grouped fields">
+                            <div class="required field" style="margin-right:10px;margin-left:12px;margin-bottom:1px !important;">
+                                <label for="time">Time</label>
+                                <input class="ui input" id="time_input" value="{{exact_time}}" type="time" name="time" {% if time == 'morning' %} min="0:00" max="11:59" {% elif time == 'afternoon' %} min="12:00" max="17:59" {% elif time == 'evening' %} min="18:00" max="23:59" {% endif %}>
+                            </div>
+
+                            <div class="field">
+                                <p><small>Current value: {{exact_time}}</small></p>
+                            <small>Must be between<br>
+                                {% if time == 'morning' %}
+                                12:00 AM to 11:59 AM
+                                {% elif time == 'afternoon' %}
+                                12:00 PM to 5:59 PM
+                                {% elif time == 'evening' %}
+                                6:00 PM to 11:59 PM
+                                {% endif %}.<br></small>
+                            </div>
+                        </div>
+                            
+                                
+                                                    
+                    </div>
+                               
+                </div>
+                <br><br>
+                <input type="submit" value="Update schedule" class="ui fluid large blue button" />
+            </form>
+            
+            <p><a href="{% url 'dashboard' %}">< Go back to dashboard</a></p>
+    </div>
+    </div>
+</div>
+
+<script>
+    $('.ui.dropdown').dropdown();
+    $('select.dropdown').dropdown();
+
+    var medicines = [];
+  
+    function get_meds(i) {
+        // console.log(i)
+        // var checked_presc = $('#p-'+i).map(function(n, v){
+        //     console.log("v:", v);
+        //     return {
+        //         med: $(v).attr("attr-med"),
+        //         quantity: $(v).attr("attr-quantity")
+        //     };
+        // })
+
+        // console.log(checked_presc);
+        // return checked_presc.toArray();
+
+        return { med: $('#presc-'+i).attr("attr-med"), 
+                quantity: $('#presc-'+i).attr("attr-quantity")};
+        
+    };
+
+    
+    $('#weektoggle').on('click', function() {
+        if($('#weektoggle').attr("checked")) {
+            $('#weektoggle').removeAttr("checked");
+            $('#days_list').removeClass("disabled");
+        } 
+        else {
+            $('#weektoggle').attr("checked","");
+            $('#days_list').addClass("disabled");
+        }
+    });
+    
+    // $('#prescription_list .item').on('click', function(e){
+    //     var el = e.target;
+    //     var el_id = '#' + el.id;
+    //     console.log($(el_id).attr("data-value"));
+    //     var meds = get_meds($(el_id).attr("data-value"));
+    //     var $select = $("#meds_list");
+
+    //     $select.html("");
+    //     $select.append('<div id="med" class="item" data-value="'+meds.med+'">'+meds.med+'</div>');
+    //     $('#medicine_input').attr("value", meds.med); 
+    //     $('#med_qty').attr("max", meds.quantity);
+    //     $('#med_qty').val(meds.quantity);
+        
+    //     // if(meds.length == 0) {
+    //     //     $select.append('<option value="-1" selected>Medicine</option>');    
+    //     //     $select.val(-1);
+    //     //     $('#med_qty').val();
+    //     // }
+    //     // meds.forEach(med => {
+    //     //     $select.append('<option value="'+med.med+'">'+med.med+'</option>');    
+    //     //     $('#med_qty').attr("max", med.quantity);
+    //     //     $('#med_qty').val(med.quantity);
+
+    //     // });
+
+    // });
+
+    $('#meds_list').on('click', function(e) {
+        var el = e.target;
+        var el_id = '#' + el.id;
+        if ($(el_id).attr("data-value")) {
+            console.log($(el_id).attr("data-value"));
+            $('#medicine_input').attr("value", $(el_id).attr("data-value")); 
+            console.log($('#medicine_input').val());
+        }
+    });
+
+    $('#day_input').val($('#days_list .item.selected').attr("data-value")); 
+
+    $('.ui.form').on('submit', function() {
+        if ($('#day_input').val() == "") {
+            $('#day_input').val($('#days_list .item.selected').attr("data-value")); 
+        }
+
+        if ($('#medicine_input').val() == "") {
+            $('#medicine_input').val($('#med').attr("data-value"));
+        }
+    })
+
+    
+    
+</script>
+
+{% endblock %}

@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 
 from datetime import time
 
@@ -33,6 +34,15 @@ def validate_time(t_range, t):
             return True
         else: return False
 
+
+def time_str(time_):
+    if time_ >= morn_start and time_ < aft_start:
+        return "morning"
+    elif time_ >= aft_start and time_ < eve_start:
+        return "afternoon"
+    elif time_ >= eve_start and time_ < eve_end:
+        return "evening"
+
 '''
 morning - [12am, 12nn) [00:00, 12:00)
 afternoon - [12nn, 6pm) [12:00, 18:00) 
@@ -52,11 +62,12 @@ class DashboardHome(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         current_user = self.request.user
         user_type = current_user.user_type
-        schedules = Schedules.objects.filter(presc__doctor__user__username=current_user.username)
+        
         context = super(DashboardHome, self).get_context_data(**kwargs)
         context['current_user'] = self.request.user
 
         if user_type == 'doctor':
+            schedules = Schedules.objects.filter(presc__doctor__user__username=current_user.username)
             context['this_user'] = Doctors.objects.get(user__username=current_user.username)
             context['patients'] = Patients.objects.filter(doctor__user__username=current_user.username).order_by('patient_id')
             context['prescriptions'] = Prescriptions.objects.filter(doctor__user__username=current_user.username).order_by('presc_id')
@@ -109,6 +120,7 @@ class DashboardHome(LoginRequiredMixin, TemplateView):
                     
         elif user_type == 'patient':
             context['this_user'] = Patients.objects.filter(user__username=current_user.username)
+            context['patients'] = Patients.objects.filter(user__username=current_user.username).order_by('patient_id')
             context['schedules'] = Schedules.objects.filter(patient__user__username=current_user.username)
             context['prescriptions'] = Prescriptions.objects.filter(patient__user__username=current_user.username)
             context['intakes'] = Intakes.objects.filter(patient__user__username=current_user.username)
@@ -247,30 +259,109 @@ class DeletePrescriptionView(LoginRequiredMixin, View):
         return redirect(reverse('home'))
 
 class ScheduleView(LoginRequiredMixin, TemplateView):
-    def get(self, requests, *args, **kwargs):
-        template_name = 'dashboard/add_schedule.html'
+    dictionary = {}
+    patient = ''
+    doctor_id = ''
+    def get(self, request, *args, **kwargs):
+        template_name = 'dashboard/update_schedule.html'
         if self.request.user.user_type == 'doctor':
-            doctor_id = Doctors.objects.get(user__user_id=self.request.user.user_id).doctor_id
-            time = self.request.GET.get('time') 
-            day = self.request.GET.get('day')
-            patient = self.request.GET.get('patient')
+            sched_id = kwargs.get('sched_id')
             
-            if patient:
-                prescriptions = Prescriptions.objects.filter(doctor__doctor_id=doctor_id, patient__patient_id=patient.patient_id)
-                medicines = list(prescriptions.values_list('medicine', flat=True))
-            else:
-                prescriptions = Prescriptions.objects.filter(doctor__doctor_id=doctor_id).order_by('patient_id')
-                medicines = list(prescriptions.values_list('medicine', flat=True))
+            schedule = Schedules.objects.get(sched_id=sched_id)
+            try:
+                if schedule:  
+                    patient = schedule.presc.patient
+                    context = {
+                        'sched_id': sched_id,
+                        'prescription' : schedule.presc,
+                        'exact_time' : schedule.time,
+                        'day' : schedule.day,
+                        'medicine' : schedule.medicine,
+                        'quantity': schedule.quantity,
+                        'time': time_str(schedule.time),
+                        'patient': patient
+                    }
+                    return render(request, template_name, context)
+                    
+                else:
+                    messages.error(request, "Error fetching that schedule.")
+                    return redirect(reverse('home'))
+            except Exception as e:
+                messages.error(request, e)
+                return redirect(reverse('home'))
 
-            context = {
-                'doctor_id' : doctor_id,
-                'time' : time,
-                'day' : day,
-                'medicines' : medicines,
-                'prescriptions': prescriptions
-            }
+        else:
+            messages.error(request, "You are unauthorized to view this page.")
+            return redirect(reverse('home'))
 
-            return render(request, template_name, context)
+    def post(self, request, *args, **kwargs):
+        sched_id = kwargs.get('sched_id')
+        patient = self.request.POST.get('patient')
+        patient_id = self.request.POST.get('patient_id')
+        presc_id = self.request.POST.get('prescription')
+        prescription = Prescriptions.objects.get(presc_id=presc_id)
+        medicine = self.request.POST.get('medicine')
+        
+        quantity = self.request.POST.get('quantity', 1)
+        day = self.request.POST.get('day')
+        
+        # repopulate dictionary
+        self.dictionary['patient_id'] = self.request.POST.get('patient_id')
+        self.dictionary['day'] = self.request.POST.get('day_arg')
+        self.dictionary['time'] = self.request.POST.get('time_arg')
+
+        try:
+            time_ = self.request.POST.get('time')
+            print("TIME:", time_)
+            print("medicine:",medicine)
+            print("day:",day)
+            hour,minute = map(int, time_.split(':'))
+            time_ = time(hour,minute)
+        except TypeError as e:
+            messages.error(request, e)
+            print("incorrect format")
+            return redirect(reverse('view-schedule', kwargs={'sched_id': sched_id}))
+        # validate time input
+        except Exception as e:
+            messages.error(request, e)
+            print("some error 1")
+            print(self.dictionary)
+            return redirect(reverse('view-schedule', kwargs={'sched_id': sched_id}))
+        else:
+            try:
+                # if time submitted is in correct range
+                if (validate_time(self.dictionary['time'], time_)):
+                    
+                    try:
+                        schedule = Schedules.objects.get(sched_id=sched_id)
+                        
+                        schedule.presc=prescription
+                        schedule.time=time_
+                        schedule.day=day
+                        schedule.medicine=medicine
+                        schedule.quantity=quantity
+                        schedule.date_modified = timezone.now()
+                        
+                        schedule.save()
+
+                    except Exception as e:
+                        messages.error(request, e)
+
+                        print(e)
+                        return redirect(reverse('home'))
+
+
+                else:
+                    messages.error(request, "Time not within the specified range.")
+                    return redirect(reverse('view-schedule', kwargs={'sched_id': sched_id}))
+
+                messages.success(request, "Successfully updated schedule.")
+                print("success yo")
+                return redirect(reverse('home'))
+            except Exception as e:
+                messages.error(request, e)
+                return redirect(reverse('view-schedule', kwargs={'sched_id': sched_id}))
+
 
 class AddScheduleView(LoginRequiredMixin, TemplateView):
     dictionary = {}
@@ -396,4 +487,8 @@ class AddScheduleView(LoginRequiredMixin, TemplateView):
 class UserUpdateView(LoginRequiredMixin, TemplateView):
     pass
 
+
+# class UpdateScheduleView(LoginRequiredMixin, TemplateView):
+    
+    
 
