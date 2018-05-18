@@ -119,11 +119,58 @@ class DashboardHome(LoginRequiredMixin, TemplateView):
                 }
                     
         elif user_type == 'patient':
-            context['this_user'] = Patients.objects.filter(user__username=current_user.username)
+            schedules = Schedules.objects.filter(presc__patient__user__username=current_user.username)
+            context['this_user'] = Patients.objects.get(user__username=current_user.username)
             context['patients'] = Patients.objects.filter(user__username=current_user.username).order_by('patient_id')
-            context['schedules'] = Schedules.objects.filter(patient__user__username=current_user.username)
             context['prescriptions'] = Prescriptions.objects.filter(patient__user__username=current_user.username)
             context['intakes'] = Intakes.objects.filter(patient__user__username=current_user.username)
+            context['schedules'] = {}
+
+            morning = schedules.filter(time__gte=morn_start, time__lt=aft_start).order_by('time')
+            afternoon = schedules.filter(time__gte=aft_start, time__lt=eve_start).order_by('time')
+            evening = schedules.filter(time__gte=eve_start, time__lte=eve_end).order_by('time')
+            
+            for p in context['patients']:    
+                context['schedules'][str(p.patient_id)] = { 'pid' : p.patient_id }
+                context['schedules'][str(p.patient_id)]['schedules'] = {
+                'monday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id, day='Monday'),
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Monday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Monday')
+                    },
+                'tuesday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Tuesday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Tuesday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Tuesday')
+                    },
+                'wednesday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Wednesday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Wednesday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Wednesday')
+                    },
+                'thursday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Thursday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Thursday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Thursday')
+                    },
+                'friday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Friday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Friday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Friday')
+                    },
+                'saturday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Saturday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Saturday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Saturday')
+                    },
+                'sunday' : {
+                        'morning': morning.filter(presc__patient__patient_id=p.patient_id,day='Sunday'), 
+                        'afternoon': afternoon.filter(presc__patient__patient_id=p.patient_id,day='Sunday'), 
+                        'evening': evening.filter(presc__patient__patient_id=p.patient_id,day='Sunday')
+                    }
+                }
+
+        
         elif user_type == 'admin':
             context['doctors'] = Doctors.objects.all()
             context['patients'] = Patients.objects.all()

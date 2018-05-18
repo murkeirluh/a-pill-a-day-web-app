@@ -7,15 +7,16 @@
             {% block content %}
 			<h2 class="ui header" align="left">Dashboard
             <div class="sub header" align="left" style="margin-bottom:5px;">Welcome,
-                {% if current_user.user_type == 'doctor' %} Dr. {% endif %} {{ this_user.name }} 
-            (<strong>{{ current_user.username }}</strong>)
+                {% if current_user.user_type == 'doctor' %}Dr. {% endif %} {{ this_user.name }} (<strong>{{ current_user.username }}</strong>) 
+                
+            
             </div></h2>
         </div>  
             <br>
             <div class="row">
                 <div id="context1">
                     <div class="ui first secondary pointing menu">
-                    {% if current_user.user_type == 'doctor' %}
+                    {% if current_user.user_type == 'doctor' %} <a href="#" onclick=
                         <a class="item active" data-tab="patients">Patients</a>
                     {% endif %}
                         <a class="item {% if current_user.user_type == 'patient' %} active {% endif %}" data-tab="prescriptions">Prescriptions</a>
@@ -24,7 +25,7 @@
                         
                         <div class="right menu">
                             <!-- {% block comment %}
-                            {% if current_user.user_type == 'doctor' %}
+                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick=
                             <a class="link item" href={% url 'update-profile' %}>Edit My Profile</a>
                             {% endif %}
                             {% endblock %} -->
@@ -32,6 +33,7 @@
                         </div>
                     </div>
                 </div>
+                {% if current_user.user_type == 'doctor' %}
                 <div class="ui active tab segment" data-tab="patients" style="padding:16px !important;">
                     <h2>Patients</h2>
                     <p>
@@ -61,19 +63,20 @@
                     {% endif %}
                     </p>
 
-                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i> Add a patient</button></p>
+                    {% if current_user.user_type == 'doctor' %}<p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i> Add a patient</button></p> {% endif %}
                 </div>
+                {% endif %}
 
-                <div class="ui tab segment" data-tab="prescriptions" style="padding:16px !important;">
+                <div class="ui {% if current_user.user_type == 'patient' %} active {% endif %} tab segment" data-tab="prescriptions" style="padding:16px !important;">
                     <h2>Prescriptions</h2>
                     
                     {% if prescriptions %}
-                    {% if current_user.user_type == 'doctor' %}<p>Click a row to edit a prescription.  </p>{% endif %}
-                    <table class="ui selectable structured table">
+                    {% if current_user.user_type == 'doctor' %} <p>Click a row to edit a prescription.</p>{% endif %}
+                    <table class="ui {% if current_user.user_type == 'doctor' %}selectable{% endif %} structured table">
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Patient</th>
+                            {% if current_user.user_type == 'doctor' %}<th>Patient</th>{% endif %}
                             <th>Medicine</th>
                             <th>Quantity</th>
                             <th>Notes</th>
@@ -82,19 +85,19 @@
                         </thead>
                         <tbody>
                             {% for pr in prescriptions %}
-                            <tr class="selectable">
-                                <td {% if current_user.user_type == 'doctor' %} onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>{{ pr.presc_id }}</td>
-                                <td {% if current_user.user_type == 'doctor' %} onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>{{ pr.patient.name }}</td>
-                                <td {% if current_user.user_type == 'doctor' %} onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
+                            <tr {% if current_user.user_type == 'doctor' %}class="selectable" {% endif %}>
+                                <td {% if current_user.user_type == 'doctor' %}onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>{{ pr.presc_id }}</td>
+                                {% if current_user.user_type == 'doctor' %}<td {% if current_user.user_type == 'doctor' %}onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>{{ pr.patient.name }}</td> {% endif %}
+                                <td {% if current_user.user_type == 'doctor' %}onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
                                     {{ pr.medicine }}
                                 </td>
-                                <td {% if current_user.user_type == 'doctor' %} onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
+                                <td {% if current_user.user_type == 'doctor' %}onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
                                     {{ pr.quantity }}
                                 </td>
-                                <td {% if current_user.user_type == 'doctor' %} onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
+                                <td {% if current_user.user_type == 'doctor' %}onclick="location.href='{% url 'update-prescription' pid=pr.presc_id %}';" {% endif %}>
                                     {{ pr.notes }}
                                 </td>
-                                {% if current_user.user_type == 'doctor' %}<td onclick="delete_presc({{ pr.presc_id }});"><i class="trash alternate icon" title="Delete this prescription"></i></td>{% endif %}
+                                {% if current_user.user_type == 'doctor' %} <td onclick="delete_presc({{ pr.presc_id }});"><i class="trash alternate icon" title="Delete this prescription"></i></td>{% endif %}
                             </tr>   
                             {% endfor %}
                         </tbody>
@@ -103,7 +106,7 @@
                     {% else %}
                         <p>No prescriptions yet.</p>
                     {% endif %}
-                          <p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'"><i class="plus icon"></i>Add a prescription</button></p>
+                    {% if current_user.user_type == 'doctor' %}<p><button class="ui small button" onclick="location.href='{% url 'add-prescription' %}'"><i class="plus icon"></i>Add a prescription</button></p> {% endif %}
                 </div>
 
                 <div class="ui tab segment" data-tab="schedules" style="padding:16px !important;">
@@ -133,7 +136,7 @@
                             {% with scheds=v.schedules %} 
                             <div class="ui bottom attached tab segment {% if p == patients.0 %} active {% endif %}" data-tab="sched-{{ p.patient_id }}">
                                 
-                                <p>Click on a cell to edit schedule.</p>
+                                {% if current_user.user_type == 'doctor' %}<p>Click on a schedule to edit it.</p> {% endif %}
                                 <table class="ui definition celled table">
                                     <thead>
                                         <tr><th></th>
@@ -155,13 +158,13 @@
                                             {% if scheds.monday.morning %}
                                                 <div class="ui list">
                                                 {% for s in scheds.monday.morning %}
-                                                <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                 <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                                 </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Monday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Monday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
@@ -169,13 +172,13 @@
                                             {% if scheds.tuesday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Tuesday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Tuesday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -184,13 +187,13 @@
                                             {% if scheds.wednesday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Wednesday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Wednesday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -199,13 +202,13 @@
                                             {% if scheds.thursday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Thursday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Thursday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
@@ -213,13 +216,13 @@
                                             {% if scheds.friday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Friday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Friday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
@@ -227,13 +230,13 @@
                                             {% if scheds.saturday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Saturday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Saturday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
@@ -241,13 +244,13 @@
                                             {% if scheds.sunday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.morning %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="morning" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Sunday', 'morning', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Sunday', 'morning', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         </tr>  
@@ -258,13 +261,13 @@
                                             {% if scheds.monday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.monday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Monday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Monday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
@@ -272,13 +275,13 @@
                                             {% if scheds.tuesday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Tuesday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Tuesday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -287,13 +290,13 @@
                                             {% if scheds.wednesday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Wednesday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Wednesday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -302,13 +305,13 @@
                                             {% if scheds.thursday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Thursday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Thursday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
@@ -316,12 +319,12 @@
                                             {% if scheds.friday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Friday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Friday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
@@ -329,13 +332,13 @@
                                             {% if scheds.saturday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Saturday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Saturday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
@@ -343,13 +346,13 @@
                                             {% if scheds.sunday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.afternoon %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="afternoon" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Sunday', 'afternoon', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Sunday', 'afternoon', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         </tr>
@@ -360,13 +363,13 @@
                                             {% if scheds.monday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.monday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Monday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Monday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
@@ -374,13 +377,13 @@
                                             {% if scheds.tuesday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Tuesday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Tuesday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -389,13 +392,13 @@
                                             {% if scheds.wednesday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Wednesday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Wednesday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                             
                                         </td>
@@ -404,13 +407,13 @@
                                             {% if scheds.thursday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Thursday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Thursday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
@@ -418,13 +421,13 @@
                                             {% if scheds.friday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Friday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Friday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
@@ -432,13 +435,13 @@
                                             {% if scheds.saturday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
                                             
-                                            <a href="#" onclick="add_schedule('Saturday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Saturday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
@@ -446,12 +449,12 @@
                                             {% if scheds.sunday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.evening %}
-                                                    <div class="item"><a href="{% url 'view-schedule' sched_id=s.sched_id %}">{{ s.time }} - {{ s.medicine }} x{{ s.quantity }}</a></div>
+                                                    <div class="item">{% if current_user.user_type == 'doctor' %} <a href="{% url 'view-schedule' sched_id=s.sched_id %}"> {% endif %} {{ s.time }} - {{ s.medicine }} x{{ s.quantity }}{% if current_user.user_type == 'doctor' %}</a>{% endif %}</div>
                                                     <input id="sched-{{ s.sched_id }}" attr-pid="{{ p.patient_id }}" attr-tod="evening" attr-time="{{ s.time }}" attr-day="{{ s.day }}" attr-med="{{ s.medicine }}" attr-qty="{{ s.quantity }}" hidden>
                                                 {% endfor %}
                                             </div>
                                             {% else %}
-                                            <a href="#" onclick="add_schedule('Sunday', 'evening', '{{ p.patient_id }}');">Add</a>
+                                            {% if current_user.user_type == 'doctor' %} <a href="#" onclick="add_schedule('Sunday', 'evening', '{{ p.patient_id }}');">Add</a>{% endif %}
                                             {% endif %}
                                         </td>
                                         </tr>
@@ -464,9 +467,6 @@
                         
                     {% endfor %}
 
-                    {% else %}
-                    <p>No patients yet.</p>
-                    <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i>Add a patient</button></p>
                     {% endif %}
                     
                 </div>

@@ -57,4 +57,4 @@ class Intakes(models.Model):
     time_taken = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return '{} intake: sched {} at {}'.format(self.patient.name, self.sched.sched_id, self.self.timetaken)
+        return '{} intake: sched {} at {}'.format(self.patient.name, self.sched.sched_id, self.time_taken)
