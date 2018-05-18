@@ -114,20 +114,20 @@
 
                     {% if patients %}
                     
-                    <form id="add_schedule" action="{% url 'add-schedule' %}" method="GET"> 
-                        <input type="text" id="sched_patient" name="patient_id" hidden>
-                        <input type="text" id="sched_day" name="day" hidden>
-                        <input type="text" id="sched_time" name="time" hidden>
-                    </form>
-                    <div class="ui top attached tabular menu">
-                        {% for p in patients %}
-                        <input type="text" id="patient_{{ p.patient_id }}" value="{{ p }}" hidden>
-                        <a class="{% if p == patients.0 %} active {% endif %}item" data-tab="sched-{{ p.patient_id }}">
-                            {{ p }}
-                        </a>
-                        {% endfor %}
-                        
-                    </div>
+                        <form id="add_schedule" action="{% url 'add-schedule' %}" method="GET"> 
+                            <input type="text" id="sched_patient" name="patient_id" hidden>
+                            <input type="text" id="sched_day" name="day" hidden>
+                            <input type="text" id="sched_time" name="time" hidden>
+                        </form>
+                        <div class="ui top attached tabular menu">
+                            {% for p in patients %}
+                            <input type="text" id="patient_{{ p.patient_id }}" value="{{ p }}" hidden>
+                            <a class="{% if p == patients.0 %} active {% endif %}item" data-tab="sched-{{ p.patient_id }}">
+                                {{ p }}
+                            </a>
+                            {% endfor %}
+                            
+                        </div>
 
                     
                     {% for p in patients %}
@@ -467,6 +467,17 @@
                         
                     {% endfor %}
 
+                    {% else %}
+
+                        {% if current_user.user_type == 'doctor' %}
+                        <p>No patients yet.</p>
+                        <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i> Add a patient</button></p> 
+
+                        {% else %}
+
+                        No schedules yet.
+                        {% endif %}
+
                     {% endif %}
                     
                 </div>
@@ -519,7 +530,19 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                {% endif %}
+
+                    {% else %}
+                    
+                        {% if current_user.user_type == 'doctor' %}
+                        <p>No patients yet.</p>
+                        <p><button class="ui small button" onclick="location.href='{% url 'patient-register' %}'"><i class="plus icon"></i> Add a patient</button></p> 
+
+                        {% else %}
+
+                        No intakes yet.
+                        {% endif %}
+
+                    {% endif %}
             </div>
         
         </div>    
