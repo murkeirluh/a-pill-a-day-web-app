@@ -136,7 +136,7 @@
                             {% with scheds=v.schedules %} 
                             <div class="ui bottom attached tab segment {% if p == patients.0 %} active {% endif %}" data-tab="sched-{{ p.patient_id }}">
                                 
-                                {% if current_user.user_type == 'doctor' %}<p>Click on a schedule to edit it.</p> {% endif %}
+                                {% if current_user.user_type == 'doctor' %}<p>Click on a schedule to edit it, or click on a cell to add a new schedule.</p> {% endif %}
                                 <table class="ui definition celled table">
                                     <thead>
                                         <tr><th></th>
@@ -154,7 +154,7 @@
                                         <td>Morning</td>
                                         <!-- Monday -->
     
-                                        <td {% if scheds.monday.morning %} class="" {% endif %} id="monday_morning">
+                                        <td {% if scheds.monday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Monday', 'morning', '{{ p.patient_id }}');" {% endif %} {% endif %} id="monday_morning">
                                             {% if scheds.monday.morning %}
                                                 <div class="ui list">
                                                 {% for s in scheds.monday.morning %}
@@ -168,7 +168,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
-                                        <td {% if scheds.tuesday.morning %} class="" {% endif %} id="tuesday_morning">
+                                        <td {% if scheds.tuesday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Tuesday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="tuesday_morning">
                                             {% if scheds.tuesday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.morning %}
@@ -183,7 +183,7 @@
                                             
                                         </td>
                                         <!-- Wednesday -->
-                                        <td {% if scheds.wednesday.morning %} class="" {% endif %} id="wednesday_morning">
+                                        <td {% if scheds.wednesday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Wednesday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="wednesday_morning">
                                             {% if scheds.wednesday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.morning %}
@@ -198,7 +198,7 @@
                                             
                                         </td>
                                         <!-- Thursday -->
-                                        <td {% if scheds.thursday.morning %} class="" {% endif %} id="thursday_morning">
+                                        <td {% if scheds.thursday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Thursday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="thursday_morning">
                                             {% if scheds.thursday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.morning %}
@@ -212,7 +212,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
-                                        <td{% if scheds.friday.morning %} class="" {% endif %} id="friday_morning">
+                                        <td{% if scheds.friday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Friday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="friday_morning">
                                             {% if scheds.friday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.morning %}
@@ -226,7 +226,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
-                                        <td{% if scheds.saturday.morning %} class="" {% endif %} id="saturday_morning">
+                                        <td{% if scheds.saturday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Saturday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="saturday_morning">
                                             {% if scheds.saturday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.morning %}
@@ -240,7 +240,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
-                                        <td{% if scheds.sunday.morning %} class="" {% endif %} id="sunday_morning">
+                                        <td{% if scheds.sunday.morning %} {% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Sunday', 'morning', '{{ p.patient_id }}');"{% endif %} {% endif %} id="sunday_morning">
                                             {% if scheds.sunday.morning %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.morning %}
@@ -257,7 +257,7 @@
                                         <tr class="afternoon">
                                         <td>Afternoon</td>
                                         <!-- Monday -->
-                                        <td {% if scheds.monday.afternoon %}class=""{% endif %} id="monday_afternoon">
+                                        <td {% if scheds.monday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Monday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="monday_afternoon">
                                             {% if scheds.monday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.monday.afternoon %}
@@ -271,7 +271,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
-                                        <td {% if scheds.tuesday.afternoon %}class=""{% endif %} id="tuesday_afternoon">
+                                        <td {% if scheds.tuesday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Tuesday', 'afternoon', '{{ p.patient_id }}');" {% endif %}{% endif %} id="tuesday_afternoon">
                                             {% if scheds.tuesday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.afternoon %}
@@ -286,7 +286,7 @@
                                             
                                         </td>
                                         <!-- Wednesday -->
-                                        <td {% if scheds.wednesday.afternoon %}class=""{% endif %} id="wednesday_afternoon">
+                                        <td {% if scheds.wednesday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Wednesday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="wednesday_afternoon">
                                             {% if scheds.wednesday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.afternoon %}
@@ -301,7 +301,7 @@
                                             
                                         </td>
                                         <!-- Thursday -->
-                                        <td {% if scheds.thursday.afternoon %}class=""{% endif %} id="thursday_afternoon">
+                                        <td {% if scheds.thursday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Thursday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="thursday_afternoon">
                                             {% if scheds.thursday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.afternoon %}
@@ -315,7 +315,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
-                                        <td {% if scheds.friday.afternoon %}class=""{% endif %} id="friday_afternoon">
+                                        <td {% if scheds.friday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Friday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="friday_afternoon">
                                             {% if scheds.friday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.afternoon %}
@@ -328,7 +328,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
-                                        <td {% if scheds.saturday.afternoon %}class=""{% endif %} id="saturday_afternoon">
+                                        <td {% if scheds.saturday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Saturday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="saturday_afternoon">
                                             {% if scheds.saturday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.afternoon %}
@@ -342,7 +342,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
-                                        <td {% if scheds.sunday.afternoon %}class=""{% endif %} id="sunday_afternoon">
+                                        <td {% if scheds.sunday.afternoon %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Sunday', 'afternoon', '{{ p.patient_id }}');"{% endif %}{% endif %} id="sunday_afternoon">
                                             {% if scheds.sunday.afternoon %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.afternoon %}
@@ -359,7 +359,7 @@
                                         <tr class="evening">
                                         <td>Evening</td>
                                         <!-- Monday -->
-                                        <td {% if scheds.monday.evening %}class=""{% endif %} id="monday_evening">
+                                        <td {% if scheds.monday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Monday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="monday_evening">
                                             {% if scheds.monday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.monday.evening %}
@@ -373,7 +373,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Tuesday -->
-                                        <td {% if scheds.tuesday.evening %}class=""{% endif %} id="tuesday_evening">
+                                        <td {% if scheds.tuesday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Tuesday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="tuesday_evening">
                                             {% if scheds.tuesday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.tuesday.evening %}
@@ -388,7 +388,7 @@
                                             
                                         </td>
                                         <!-- Wednesday -->
-                                        <td {% if scheds.wednesday.evening %}class=""{% endif %} id="wednesday_evening">
+                                        <td {% if scheds.wednesday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Wednesday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="wednesday_evening">
                                             {% if scheds.wednesday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.wednesday.evening %}
@@ -403,7 +403,7 @@
                                             
                                         </td>
                                         <!-- Thursday -->
-                                        <td {% if scheds.thursday.evening %}class=""{% endif %} id="thursday_evening">
+                                        <td {% if scheds.thursday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Thursday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="thursday_evening">
                                             {% if scheds.thursday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.thursday.evening %}
@@ -417,7 +417,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Friday -->
-                                        <td {% if scheds.friday.evening %}class=""{% endif %} id="friday_evening">
+                                        <td {% if scheds.friday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Friday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="friday_evening">
                                             {% if scheds.friday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.friday.evening %}
@@ -431,7 +431,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Saturday -->
-                                        <td {% if scheds.saturday.evening %}class=""{% endif %} id="saturday_evening">
+                                        <td {% if scheds.saturday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Saturday', 'evening', '{{ p.patient_id }}');" {% endif %}{% endif %} id="saturday_evening">
                                             {% if scheds.saturday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.saturday.evening %}
@@ -445,7 +445,7 @@
                                             {% endif %}
                                         </td>
                                         <!-- Sunday -->
-                                        <td {% if scheds.sunday.evening %}class=""{% endif %} id="sunday_evening">
+                                        <td {% if scheds.sunday.evening %}{% if current_user.user_type == 'doctor' %} class="selectable" onclick="add_schedule('Sunday', 'evening', '{{ p.patient_id }}');"{% endif %}{% endif %} id="sunday_evening">
                                             {% if scheds.sunday.evening %}
                                             <div class="ui list">
                                                 {% for s in scheds.sunday.evening %}
